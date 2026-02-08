@@ -1,12 +1,31 @@
+/*
 {
   "compilerOptions": {
-    "module": "commonjs",                                
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2023",
+    "strict": true,
+    "esModuleInterop": true,
+    "ignoreDeprecations": "6.0"
+  }
+}
+*/
+
+
+{
+  "compilerOptions": {
+    "module": "esnext",                                
     "rootDir": "./src",
     "outDir": "./dist",  
-    "moduleResolution": "node10", 
+    "moduleResolution": "bundler", 
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "target": "es2023",
+    // "ignoreDeprecations": "6.0"  
   },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }
+
