@@ -30,6 +30,11 @@ export const auth = betterAuth({
         required: false,
         defaultValue: false,
       },
+      needPasswordChange: {
+        type: "boolean",
+        required: true,
+        defaultValue: false,
+      },
     },
   },
 });
