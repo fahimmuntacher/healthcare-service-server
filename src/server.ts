@@ -1,11 +1,12 @@
 import app from "./app";
+import { envVars } from "./app/config/env";
 
-const PORT = 5000;
+
 
 const bootStrap = () => {
   try {
-    app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
+    app.listen(envVars.PORT, () => {
+      console.log(`Server is running on http://localhost:${envVars.PORT}`);
     });
   } catch (error) {
    
