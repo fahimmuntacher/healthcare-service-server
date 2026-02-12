@@ -6,10 +6,7 @@ export const catchAsync = (fn: RequestHandler) => {
       await fn(req, res, next);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      res.status(400).json({
-        success: false,
-        error: error.message,
-      });
+      next(error)
     }
   };
 };

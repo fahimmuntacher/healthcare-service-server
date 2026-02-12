@@ -27,14 +27,24 @@ const registerUser = async (payload: IRegisterPatientPayload) => {
   //  transaction user into patient after successful registration
 
   const patient = await prisma.$transaction(async (tx) => {
-    const patientTx = await tx.patient.create({
-      data: {
-        userId: data.user.id,
-        name: payload.name,
-        email: payload.email,
-      },
-    });
-    return patientTx;
+    try {
+      const patientTx = await tx.patient.create({
+        data: {
+          userId: data.user.id,
+          name: payload.name,
+          email: payload.email,
+        },
+      });
+      return patientTx;
+    } catch (error) {
+      console.log(error);
+      await prisma.user.delete({
+        where: {
+          id: data.user.id,
+        },
+      });
+      throw error;
+    }
   });
 
   return {
