@@ -3,6 +3,11 @@
 import { NextFunction, Request, Response } from "express";
 import { envVars } from "../config/env";
 import status from "http-status";
+import z from "zod";
+import { TErrorSources } from "../interfaces/error.interfaces";
+import { handleZodErrors } from "../errorHelpers/handleZodErrors";
+
+
 
 export const globalErrorHandler = (
   err: any,
@@ -14,12 +19,36 @@ export const globalErrorHandler = (
     console.log(err);
   }
 
-  const statusCode: number = status.INTERNAL_SERVER_ERROR;
-  const message: string = "Internal server error";
+  const errorSource: TErrorSources[] = [];
+  let statusCode: number = status.INTERNAL_SERVER_ERROR;
+  let message: string = "Internal server error";
+
+  /* [
+      {
+        expected: 'string',
+        code: 'invalid_type',
+        path: [ 'username' ],
+        message: 'Invalid input: expected string'
+      },
+      {
+        expected: 'number',
+        code: 'invalid_type',
+        path: [ 'xp' ],
+        message: 'Invalid input: expected number'
+      }
+    ] */
+
+  if (err instanceof z.ZodError) {
+   const simpleZodError = handleZodErrors(err);
+   statusCode = simpleZodError.statusCode;
+   message = simpleZodError.message;
+   errorSource.push(...simpleZodError.errorSource);
+  }
 
   res.status(statusCode).json({
     success: false,
     message: message,
     error: err.message,
+    errorSource 
   });
 };
