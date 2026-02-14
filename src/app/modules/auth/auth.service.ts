@@ -50,9 +50,28 @@ const registerUser = async (payload: IRegisterPatientPayload) => {
       throw error;
     }
   });
+  const accessToke = tokenUtils.getAccessToken({
+    userId: data.user.id,
+    email: data.user.email,
+    role: data.user.role,
+    status: data.user.status,
+    isDeleted: data.user.isDeleted,
+    emailVerified: data.user.emailVerified,
+  });
+
+  const refreshToken = tokenUtils.getRefreshToken({
+    userId: data.user.id,
+    email: data.user.email,
+    role: data.user.role,
+    status: data.user.status,
+    isDeleted: data.user.isDeleted,
+    emailVerified: data.user.emailVerified,
+  });
 
   return {
     ...data,
+    accessToke,
+    refreshToken,
     patient,
   };
 };
@@ -67,10 +86,10 @@ const loginUser = async (payload: IRegisterPatientPayload) => {
     },
   });
 
-  if (!data.user.emailVerified) {
-    // throw new Error("Please verify your email");
-    throw new AppError("Please verify your email", status.BAD_REQUEST);
-  }
+  // if (!data.user.emailVerified) {
+  //   // throw new Error("Please verify your email");
+  //   throw new AppError("Please verify your email", status.BAD_REQUEST);
+  // }
 
   if (data.user.isDeleted || data.user.status === UserStatus.DELETED) {
     throw new AppError("User is deleted", status.FORBIDDEN);

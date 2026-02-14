@@ -1,4 +1,4 @@
-import express, { Application,Request, Response } from "express";
+import express, { Application, Request, Response } from "express";
 import { IndexRoutes } from "./app/routes";
 import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import { notFound } from "./app/middleware/notFound";
@@ -9,7 +9,7 @@ const app: Application = express();
 app.use(express.json());
 
 // routes
-app.use("/api/v1", IndexRoutes)
+app.use("/api/v1", IndexRoutes);
 
 // Basic route
 app.get("/", (req: Request, res: Response) => {
@@ -19,8 +19,7 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-app.use(globalErrorHandler)
-app.use(notFound)
-
+app.use(globalErrorHandler);
+app.use(notFound);
 
 export default app;
