@@ -10,10 +10,13 @@ const createToken = (
   return token;
 };
 
-const verifyToke = (token: string, secret: string) => {
+const verifyToken = (token: string, secret: string) => {
   try {
     const decoded = jwt.verify(token, secret) as JwtPayload;
-    return decoded;
+    return {
+      success: true,
+      data: decoded,
+    };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     return {
@@ -31,6 +34,6 @@ const decodedToken = (token: string) => {
 
 export const jwtUtils = {
   createToken,
-  verifyToke,
+  verifyToken,
   decodedToken,
 };

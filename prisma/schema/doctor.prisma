@@ -1,37 +1,38 @@
 model Doctor {
-    id                  String    @id @default(uuid(7))
-    name                String
-    email               String    @unique
-    registrationNumber  String    @unique
-    experience          Int       @default(0)
-    gender              Gender
-    appintementFee      Float     @default(0)
-    qualification       String?
-    currentWorkingPlace String?
-    designation         String?
-    averageRating       Float     @default(0.0)
-    profilePhoto        String?
-    phoneNumber         String?
-    address             String?
-    isDeleted           Boolean   @default(false)
-    needPasswordChange  Boolean   @default(false)
-    deletedAt           DateTime?
-    createdAt           DateTime  @default(now())
-    updatedAt           DateTime  @updatedAt
+    id String @id @default(uuid(7))
 
-    // relations
+    name          String
+    email         String    @unique
+    profilePhoto  String?
+    contactNumber String?
+    address       String?
+    isDeleted     Boolean   @default(false)
+    deletedAt     DateTime?
+
+    registrationNumber  String @unique
+    experience          Int    @default(0)
+    gender              Gender
+    appointmentFee      Float @default(0.0)
+    qualification       String
+    currentWorkingPlace String
+    designation         String
+    averageRating       Float  @default(0.0)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    //relations
+
     userId String @unique
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-    specialities doctorSpeciality[] 
+    specialties     DoctorSpecialty[]
+    appointments    Appointment[]
+    prescriptions   Prescription[]
+    reviews         Review[]
+    doctorSchedules DoctorSchedules[]
 
-    @@index([email], name: "doctor_email_index")
-    @@index([isDeleted], name: "doctor_isDeleted_index")
-
+    @@index([email], name: "idx_doctor_email")
+    @@index([isDeleted], name: "idx_doctor_isDeleted")
     @@map("doctor")
-}
-
-enum Gender {
-    MALE
-    FEMALE
 }
