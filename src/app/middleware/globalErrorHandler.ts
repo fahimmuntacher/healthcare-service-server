@@ -7,8 +7,6 @@ import z from "zod";
 import { TErrorSources } from "../interfaces/error.interfaces";
 import { handleZodErrors } from "../errorHelpers/handleZodErrors";
 
-
-
 export const globalErrorHandler = (
   err: any,
   req: Request,
@@ -22,6 +20,7 @@ export const globalErrorHandler = (
   const errorSource: TErrorSources[] = [];
   let statusCode: number = status.INTERNAL_SERVER_ERROR;
   let message: string = "Internal server error";
+  let stack: string | undefined;
 
   /* [
       {
@@ -39,16 +38,22 @@ export const globalErrorHandler = (
     ] */
 
   if (err instanceof z.ZodError) {
-   const simpleZodError = handleZodErrors(err);
-   statusCode = simpleZodError.statusCode;
-   message = simpleZodError.message;
-   errorSource.push(...simpleZodError.errorSource);
+    const simpleZodError = handleZodErrors(err);
+    statusCode = simpleZodError.statusCode;
+    message = simpleZodError.message;
+    errorSource.push(...simpleZodError.errorSource);
+    stack = simpleZodError.stack ?? err.stack;
+  } else if (err instanceof Error) {
+    statusCode = status.INTERNAL_SERVER_ERROR;
+    message = err.message;
+    stack = err.stack;
   }
 
   res.status(statusCode).json({
     success: false,
-    message: message,
+    message,
     error: err.message,
-    errorSource 
+    errorSource,
+    stack,
   });
 };

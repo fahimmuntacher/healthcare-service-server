@@ -16,11 +16,11 @@ export const handleZodErrors = (err: z.ZodError) : TErrorRes=> {
     });
   });
 
-    return {
-    success : false,
-    statusCode,
-    message,
-    
-    errorSource
-    }
+   return {
+  success: false,
+  statusCode,
+  message,
+  stack: err.stack,
+  errorSource
+};
 };

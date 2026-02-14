@@ -13,6 +13,7 @@ app.use("/api/v1", IndexRoutes)
 
 // Basic route
 app.get("/", (req: Request, res: Response) => {
+  // throw new AppError("This is a test error", 400);
   res.send({
     message: "HealthCare Server is running!",
   });
