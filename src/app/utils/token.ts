@@ -1,19 +1,17 @@
+import { Response } from "express";
 import { JwtPayload, SignOptions } from "jsonwebtoken";
-import { jwtUtils } from "./jwt";
 import { envVars } from "../config/env";
-import { cookieUtils } from "./cookie";
+import { CookieUtils } from "./cookie";
+import { jwtUtils } from "./jwt";
 
-import type { Response as ExpressResponse } from "express";
-
-// creating
+//Creating access token
 const getAccessToken = (payload: JwtPayload) => {
   const accessToken = jwtUtils.createToken(
     payload,
     envVars.ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: envVars.ACCESS_TOKEN_EXPIRES_IN,
-    } as SignOptions,
+    { expiresIn: envVars.ACCESS_TOKEN_EXPIRES_IN } as SignOptions,
   );
+
   return accessToken;
 };
 
@@ -26,46 +24,36 @@ const getRefreshToken = (payload: JwtPayload) => {
   return refreshToken;
 };
 
-const setAccessTokenCookie = (
-  res: ExpressResponse<any, Record<string, any>>,
-  token: string,
-) => {
-  // const maxAge = ms(envVars.ACCESS_TOKEN_EXPIRES_IN as any) as unknown as number;
-
-  cookieUtils.setCookie(res, "accessToken", token, {
+const setAccessTokenCookie = (res: Response, token: string) => {
+  CookieUtils.setCookie(res, "accessToken", token, {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: false,
+    sameSite: "lax",
     path: "/",
-    // 1 day
-    maxAge: 24 * 60 * 60 * 1000,
+    //1 day
+    maxAge: 60 * 60 * 24 * 1000,
   });
 };
 
-const setRefreshTokenCookie = (
-  res: ExpressResponse<any, Record<string, any>>,
-  token: string,
-) => {
-  cookieUtils.setCookie(res, "refreshToken", token, {
+const setRefreshTokenCookie = (res: Response, token: string) => {
+  CookieUtils.setCookie(res, "refreshToken", token, {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: false,
+    sameSite: "lax",
     path: "/",
-    // 7 days
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+    //7d
+    maxAge: 60 * 60 * 24 * 1000 * 7,
   });
 };
 
-const setBetterAuthCookie = (
-  res: ExpressResponse<any, Record<string, any>>,
-  token: string,
-) => {
-  cookieUtils.setCookie(res, "better-auth.session_token", token, {
+const setBetterAuthSessionCookie = (res: Response, token: string) => {
+  CookieUtils.setCookie(res, "better-auth.session_token", token, {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: false,
+    sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 60 * 24, // 1 day in seconds
+    //1 day
+    maxAge: 60 * 60 * 24 * 1000,
   });
 };
 
@@ -74,5 +62,5 @@ export const tokenUtils = {
   getRefreshToken,
   setAccessTokenCookie,
   setRefreshTokenCookie,
-  setBetterAuthCookie,
+  setBetterAuthSessionCookie,
 };

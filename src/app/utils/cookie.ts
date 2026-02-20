@@ -1,30 +1,19 @@
-import type { CookieOptions, Request, Response as ExpressResponse } from "express"
+import { CookieOptions, Request, Response } from "express";
 
-const setCookie = (
-    res: ExpressResponse<any, Record<string, any>>,
-    key : string,
-    value : string,
-    options : CookieOptions,
-) => {
+const setCookie = (res: Response, key: string, value: string, options: CookieOptions) => {
     res.cookie(key, value, options);
 }
 
-const getCookie = (req : Request, key : string ) => {
-    console.log("key from get cookie", key);
-    console.log(req.cookies[key]);
+const getCookie = (req: Request, key: string) => {
     return req.cookies[key];
-} 
-
-const clearCookie = (
-    res: ExpressResponse<any, Record<string, any>>,
-    key : string,
-    options : CookieOptions,
-) => {
-        res.clearCookie(key, options);
 }
 
-export const cookieUtils = {
+const clearCookie = (res: Response, key: string, options: CookieOptions) => {
+    res.clearCookie(key, options);
+}
+
+export const CookieUtils = {
     setCookie,
     getCookie,
-    clearCookie
+    clearCookie,
 }

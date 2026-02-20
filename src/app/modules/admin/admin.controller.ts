@@ -53,7 +53,7 @@ const deleteAdmin = catchAsync(
     async (req: Request, res: Response) => {
         const { id } = req.params;
         const user = req.user;
-
+        
         const result = await AdminService.deleteAdmin(id as string, user);
 
         sendResponse(res, {
