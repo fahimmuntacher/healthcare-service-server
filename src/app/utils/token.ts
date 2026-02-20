@@ -27,8 +27,8 @@ const getRefreshToken = (payload: JwtPayload) => {
 const setAccessTokenCookie = (res: Response, token: string) => {
   CookieUtils.setCookie(res, "accessToken", token, {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: false, //have to update after deploy 
+    sameSite: "lax", //have to update after deploy 
     path: "/",
     //1 day
     maxAge: 60 * 60 * 24 * 1000,

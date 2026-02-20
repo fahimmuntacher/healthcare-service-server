@@ -14,7 +14,7 @@ export const checkAuth =
     try {
       //Session Token Verification
       const sessionToken = req.cookies["better-auth.session_token"]
-      console.log("check auth session token",sessionToken);
+      // console.log("check auth session token",sessionToken);
 
       if (!sessionToken) {
         throw new Error("Unauthorized access! No session token provided.");
