@@ -275,15 +275,14 @@ const changePassword = async (
   return { ...result, accessToken, refreshToken };
 };
 
-
-const logOutUser = async(sessionToken : string) => {
+const logOutUser = async (sessionToken: string) => {
   const res = await auth.api.signOut({
-    headers : new Headers({
-      Authorization : `Bearer ${sessionToken}`
-    })
-  })
-  return res
-}
+    headers: new Headers({
+      Authorization: `Bearer ${sessionToken}`,
+    }),
+  });
+  return res;
+};
 
 // const changePassword = async (payload : IChangePasswordPayload, sessionToken : string) =>{
 //     const session = await auth.api.getSession({
@@ -486,11 +485,31 @@ const logOutUser = async(sessionToken : string) => {
 //     }
 // }
 
+const verifyEmail = async (email: string, otp: string) => {
+  const result = await auth.api.verifyEmailOTP({
+    body: {
+      email,
+      otp,
+    },
+  });
+  if (result.status && !result.user.emailVerified) {
+    await prisma.user.update({
+      where: {
+        email,
+      },
+      data: {
+        emailVerified: true,
+      },
+    });
+  }
+};
+
 export const AuthService = {
   registerPatient,
   loginUser,
   getMe,
   getNewToken,
   changePassword,
-  logOutUser
+  logOutUser,
+  verifyEmail
 };

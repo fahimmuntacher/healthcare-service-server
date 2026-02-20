@@ -16,6 +16,11 @@ interface EnvConfig {
   BETTER_AUTH_SESSION_EXPIRES_IN: string;
   BETTER_AUTH_UPDATE_SESSION_AGE: string;
   FRONTED_URL: string;
+  EMAIL_SENDER_SMTP_USER: string;
+  EMAIL_SENDER_SMTP_PASS: string;
+  EMAIL_SENDER_SMTP_HOST: string;
+  EMAIL_SENDER_SMTP_PORT: string;
+  EMAIL_SENDER_SMTP_FROM: string;
 }
 
 const loadVariables = (): EnvConfig => {
@@ -32,6 +37,11 @@ const loadVariables = (): EnvConfig => {
     "BETTER_AUTH_SESSION_EXPIRES_IN",
     "BETTER_AUTH_UPDATE_SESSION_AGE",
     "FRONTED_URL",
+    "EMAIL_SENDER_SMTP_USER",
+    "EMAIL_SENDER_SMTP_PASS",
+    "EMAIL_SENDER_SMTP_HOST",
+    "EMAIL_SENDER_SMTP_PORT",
+    "EMAIL_SENDER_SMTP_FROM",
   ];
 
   requiredVariables.forEach((variable) => {
@@ -59,6 +69,11 @@ const loadVariables = (): EnvConfig => {
     BETTER_AUTH_UPDATE_SESSION_AGE: process.env
       .BETTER_AUTH_UPDATE_SESSION_AGE as string,
     FRONTED_URL: process.env.FRONTED_URL as string,
+    EMAIL_SENDER_SMTP_USER: process.env.EMAIL_SENDER_SMTP_USER as string,
+    EMAIL_SENDER_SMTP_PASS: process.env.EMAIL_SENDER_SMTP_PASS as string,
+    EMAIL_SENDER_SMTP_HOST: process.env.EMAIL_SENDER_SMTP_HOST as string,
+    EMAIL_SENDER_SMTP_PORT: process.env.EMAIL_SENDER_SMTP_PORT as string,
+    EMAIL_SENDER_SMTP_FROM: process.env.EMAIL_SENDER_SMTP_FROM as string,
   };
 };
 
