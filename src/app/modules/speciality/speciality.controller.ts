@@ -5,7 +5,12 @@ import { sendResponse } from "../../shared/sendResponse";
 
 // create speciality
 const createSpeciality = catchAsync(async (req: Request, res: Response) => {
-  const payload = req.body;
+  const payload = {
+    ...req.body,
+    icon : req.file?.path 
+  };
+  console.log("speciality payload", req.body);
+  
   const result = specialityService.createSpeciality(payload);
   sendResponse(res, {
     httpStatusCode: 201,

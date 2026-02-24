@@ -3,7 +3,7 @@ import { prisma } from "../../lib/prisma";
 
 const createSpeciality = async (payload: Specialty): Promise<Specialty> => {
   const speciality = await prisma.specialty.create({
-    data: payload,
+    data: payload
   });
   return speciality;
 };
