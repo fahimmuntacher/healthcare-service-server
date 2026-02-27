@@ -10,7 +10,7 @@ import {
   PrismaWhereConditions,
 } from "../interfaces/query.interface";
 
-// T = model type
+// T = Model Type
 export class QueryBuilder<
   T,
   TWhereInput = Record<string, unknown>,
@@ -23,16 +23,12 @@ export class QueryBuilder<
   private skip: number = 0;
   private sortBy: string = "createdAt";
   private sortOrder: "asc" | "desc" = "desc";
-  // private selectFields: Record<
-  //   string,
-  //   boolean | undefined | Record<string, unknown>
-  // >;
   private selectFields: Record<string, boolean> | undefined;
 
   constructor(
     private model: PrismaModelDelegate,
     private queryParams: IQueryParams,
-    private config: IQueryConfig,
+    private config: IQueryConfig = {},
   ) {
     this.query = {
       where: {},
@@ -50,11 +46,13 @@ export class QueryBuilder<
   search(): this {
     const { searchTerm } = this.queryParams;
     const { searchableFields } = this.config;
+    // doctorSearchableFields = ['user.name', 'user.email', 'specialties.specialty.title' , 'specialties.specialty.description']
     if (searchTerm && searchableFields && searchableFields.length > 0) {
       const searchConditions: Record<string, unknown>[] = searchableFields.map(
         (field) => {
           if (field.includes(".")) {
             const parts = field.split(".");
+
             if (parts.length === 2) {
               const [relation, nestedField] = parts;
 
@@ -62,6 +60,7 @@ export class QueryBuilder<
                 contains: searchTerm,
                 mode: "insensitive" as const,
               };
+
               return {
                 [relation]: {
                   [nestedField]: stringFilter,
@@ -69,32 +68,39 @@ export class QueryBuilder<
               };
             } else if (parts.length === 3) {
               const [relation, nestedRelation, nestedField] = parts;
+
               const stringFilter: PrismaStringFilter = {
                 contains: searchTerm,
                 mode: "insensitive" as const,
               };
+
               return {
                 [relation]: {
-                  [nestedRelation]: {
-                    [nestedField]: stringFilter,
+                  some: {
+                    [nestedRelation]: {
+                      [nestedField]: stringFilter,
+                    },
                   },
                 },
               };
             }
-
-            const stringFilter: PrismaStringFilter = {
-              contains: searchTerm,
-              mode: "insensitive" as const,
-            };
-            return {
-              [field]: stringFilter,
-            };
           }
+          // direct field
+          const stringFilter: PrismaStringFilter = {
+            contains: searchTerm,
+            mode: "insensitive" as const,
+          };
+
+          return {
+            [field]: stringFilter,
+          };
         },
       );
 
       const whereConditions = this.query.where as PrismaWhereConditions;
+
       whereConditions.OR = searchConditions;
+
       const countWhereConditions = this.countQuery
         .where as PrismaWhereConditions;
       countWhereConditions.OR = searchConditions;
@@ -102,7 +108,8 @@ export class QueryBuilder<
 
     return this;
   }
-
+  // /doctors?searchTerm=john&page=1&sortBy=name&specialty=cardiology&appointmentFee[lt]=100 => {}
+  // { specialty: 'cardiology', appointmentFee: { lt: '100' } }
   filter(): this {
     const { filterableFields } = this.config;
     const excludedField = [
@@ -419,29 +426,9 @@ export class QueryBuilder<
       this.countQuery as Parameters<typeof this.model.count>[0],
     );
   }
-  
+
   getQuery(): PrismaFindManyArgs {
     return this.query;
-  }
-
-  private parseFilterValue(value: unknown): unknown {
-    if (value === "true") {
-      return true;
-    }
-
-    if (value === "false") {
-      return false;
-    }
-
-    if (typeof value === "string" && !isNaN(Number(value)) && value !== "") {
-      return Number(value);
-    }
-
-    if (Array.isArray(value)) {
-      return { in: value.map((item) => this.parseFilterValue(item)) };
-    }
-
-    return value;
   }
 
   private deepMerge(
@@ -473,6 +460,25 @@ export class QueryBuilder<
       }
     }
     return result;
+  }
+
+  private parseFilterValue(value: unknown): unknown {
+    if (value === "true") {
+      return true;
+    }
+    if (value === "false") {
+      return false;
+    }
+
+    if (typeof value === "string" && !isNaN(Number(value)) && value != "") {
+      return Number(value);
+    }
+
+    if (Array.isArray(value)) {
+      return { in: value.map((item) => this.parseFilterValue(item)) };
+    }
+
+    return value;
   }
 
   private parseRangeFilter(

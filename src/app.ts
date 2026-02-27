@@ -8,14 +8,14 @@ import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./app/lib/auth";
 import path from "node:path";
+import qs from "qs";
 
 const app: Application = express();
 
+app.set("query parser", (string: string) => qs.parse(string));
+
 app.set("view engine", "ejs");
-app.set("views", path.resolve(
-      process.cwd(),
-      `src/app/templates`,
-    ))
+app.set("views", path.resolve(process.cwd(), `src/app/templates`));
 app.use("/api/auth", toNodeHandler(auth));
 
 // enable URL-encoded from data parsing
@@ -39,7 +39,7 @@ app.use(
   }),
 );
 
-app.use(express.urlencoded({extended : true}))
+app.use(express.urlencoded({ extended: true }));
 
 // routes
 app.use("/api/v1", IndexRoutes);

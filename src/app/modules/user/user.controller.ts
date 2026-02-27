@@ -4,6 +4,7 @@ import { sendResponse } from "../../shared/sendResponse";
 import { userService } from "./user.service";
 import status from "http-status";
 
+
 const createDoctor = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body;
     const result = await userService.createDoctor(payload);

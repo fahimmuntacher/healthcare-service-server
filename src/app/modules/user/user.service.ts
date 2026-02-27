@@ -1,20 +1,23 @@
 import status from "http-status";
-import { Role, Speciality } from "../../../generated/prisma/client";
+import { Role, Specialty } from "../../../generated/prisma/client";
 import AppError from "../../errorHelpers/AppError";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
 import { ICreateDoctor } from "./user.interface";
 
 const createDoctor = async (payload: ICreateDoctor) => {
-  const specialities: Speciality[] = [];
+  const specialities: Specialty[] = [];
   for (const specialityId of payload.specialities) {
-    const speciality = await prisma.speciality.findUnique({
+    const speciality = await prisma.specialty.findUnique({
       where: {
         id: specialityId,
       },
     });
     if (!speciality) {
-      throw new AppError(`Speciality with id ${specialityId} not found`, status.BAD_REQUEST);
+      throw new AppError(
+        `Speciality with id ${specialityId} not found`,
+        status.BAD_REQUEST,
+      );
     }
     specialities.push(speciality);
   }
@@ -26,7 +29,10 @@ const createDoctor = async (payload: ICreateDoctor) => {
   });
 
   if (userExist) {
-    throw new AppError("User with this email already exists", status.BAD_REQUEST);
+    throw new AppError(
+      "User with this email already exists",
+      status.BAD_REQUEST,
+    );
   }
 
   const userData = await auth.api.signUpEmail({
@@ -51,10 +57,10 @@ const createDoctor = async (payload: ICreateDoctor) => {
       const doctorSpecialityData = specialities.map((speciality) => {
         return {
           doctorId: doctorData.id,
-          specialityId: speciality.id,
+          specialtyId: speciality.id,
         };
       });
-      await tx.doctorSpeciality.createMany({
+      await tx.doctorSpecialty.createMany({
         data: doctorSpecialityData,
       });
 
@@ -68,12 +74,12 @@ const createDoctor = async (payload: ICreateDoctor) => {
           name: true,
           email: true,
           profilePhoto: true,
-          phoneNumber: true,
+          contactNumber: true,
           address: true,
           registrationNumber: true,
           experience: true,
           gender: true,
-          appintementFee: true,
+          appointmentFee: true,
           qualification: true,
           currentWorkingPlace: true,
           designation: true,
@@ -94,9 +100,9 @@ const createDoctor = async (payload: ICreateDoctor) => {
               updatedAt: true,
             },
           },
-          specialities: {
+          specialties: {
             select: {
-              speciality: {
+              specialty: {
                 select: {
                   title: true,
                   id: true,
@@ -106,7 +112,7 @@ const createDoctor = async (payload: ICreateDoctor) => {
           },
         },
       });
-      return doctor
+      return doctor;
     });
 
     return doctorTransaction;
@@ -120,7 +126,6 @@ const createDoctor = async (payload: ICreateDoctor) => {
   }
 };
 
-
 export const userService = {
-    createDoctor
-}
+  createDoctor,
+};

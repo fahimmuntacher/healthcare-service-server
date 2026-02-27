@@ -5,7 +5,7 @@ import { validateRequest } from "../../middleware/validateRequest";
 import { updateDoctorZodSchema } from "./doctor.validation";
 
 const router = Router();
-router.get("/", DoctorController.getAllDoctor);
+router.get("/", DoctorController.getAllDoctors);
 router.get(
   "/:id",
 //   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),

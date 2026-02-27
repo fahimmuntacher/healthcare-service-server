@@ -12,7 +12,7 @@ export const createDoctorZod = z.object({
       .min(5, "Name must be at least 5 characters long")
       .max(50, "Name must be at most 50 characters long"),
     email: z.email("Invalid email address"),
-    phoneNumber: z
+    contactNumber: z
       .string("Phone number is required")
       .max(11, "Phone number must be at most 11 characters long"),
     address: z
@@ -23,7 +23,7 @@ export const createDoctorZod = z.object({
       .max(20, "Registration number must be at most 20 characters long"),
     experience: z.number("Experience is required"),
     gender: z.enum([Gender.MALE, Gender.FEMALE]),
-    appintementFee: z.number("Appintement fee is required"),
+    appointmentFee: z.number("Appointement fee is required"),
     qualification: z
       .string("Qualification is required")
       .max(100, "Qualification must be at most 100 characters long"),
