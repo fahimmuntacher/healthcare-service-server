@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import express, { Application, Request, Response } from "express";
 import { IndexRoutes } from "./app/routes";
 import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
@@ -9,13 +10,24 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./app/lib/auth";
 import path from "node:path";
 import qs from "qs";
+import { PaymentController } from "./app/modules/payment/payment.controller";
+import cron from "node-cron";
+import { AppointmentService } from "./app/modules/appointment/appointment.service";
 
 const app: Application = express();
 
 app.set("query parser", (string: string) => qs.parse(string));
 
 app.set("view engine", "ejs");
+
 app.set("views", path.resolve(process.cwd(), `src/app/templates`));
+
+app.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  PaymentController.handleStripeWebhookEvent,
+);
+
 app.use("/api/auth", toNodeHandler(auth));
 
 // enable URL-encoded from data parsing
@@ -41,6 +53,17 @@ app.use(
 
 app.use(express.urlencoded({ extended: true }));
 
+cron.schedule("*/25 * * * *", async () => {
+  try {
+    console.log("Running cron job to cancel the unpaid appointments.......");
+    // await AppointmentService.cancelUnpaidAppointments();
+  } catch (error: any) {
+    console.error(
+      "Error occured while canceling unpaid appointments :",
+      error.message,
+    );
+  }
+});
 // routes
 app.use("/api/v1", IndexRoutes);
 
