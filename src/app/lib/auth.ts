@@ -9,8 +9,8 @@ import { envVars } from "../config/env";
 // If your Prisma file is located elsewhere, you can change the path
 
 export const auth = betterAuth({
-  baseURL : envVars.BETTER_AUTH_URL,
-  secret : envVars.BETTER_AUTH_SECRET,
+  baseURL: envVars.BETTER_AUTH_URL,
+  secret: envVars.BETTER_AUTH_SECRET,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -27,18 +27,17 @@ export const auth = betterAuth({
 
       mapProfileToUser: () => {
         return {
-          role : Role.PATIENT,
-          status : UserStatus.ACTIVE,
-          needPasswordChange : false,
-          isDeleted : false,
-          emailVerified : true,
-          deletedAt : null
-        }
+          role: Role.PATIENT,
+          status: UserStatus.ACTIVE,
+          needPasswordChange: false,
+          isDeleted: false,
+          emailVerified: true,
+          deletedAt: null,
+        };
       },
     },
   },
 
-  
   emailVerification: {
     sendOnSignUp: true,
     sendOnSignIn: true,
@@ -73,23 +72,23 @@ export const auth = betterAuth({
 
   advanced: {
     cookiePrefix: "better-auth",
-    useSecureCookies : false,
-    cookies : {
-      state : {
-        attributes : {
-          sameSite : "none",
-          secure : true, // after deploy will be chagne 
-          path : "/"
-        }
+    useSecureCookies: false,
+    cookies: {
+      state: {
+        attributes: {
+          sameSite: "none",
+          secure: true, // after deploy will be chagne
+          path: "/",
+        },
       },
-      sessionToken : {
-        attributes : {
-          sameSite : "none", 
-          secure : true, 
-          path : "/"
-        }
-      }
-    }
+      sessionToken: {
+        attributes: {
+          sameSite: "none",
+          secure: true,
+          path: "/",
+        },
+      },
+    },
   },
 
   plugins: [
@@ -98,23 +97,41 @@ export const auth = betterAuth({
       overrideDefaultEmailVerification: true,
       async sendVerificationOTP({ email, otp, type }) {
         if (type === "email-verification") {
-          // const user = await prisma.user.findUnique({
-          //   where: {
-          //     email,
-          //   },
-          // });
+          const user = await prisma.user.findUnique({
+            where: {
+              email,
+            },
+          });
 
-          // if (user && !user.emailVerified) {
-          //   sendEmail({
-          //     to: email,
-          //     subject: "Verify your email",
-          //     templateName: "otp",
-          //     templateData: {
-          //       name: user.name,
-          //       otp,
-          //     },
-          //   });
-          // }
+          if (!user) {
+            console.error(`User with this ${email} not found.`);
+            return;
+          }
+
+          if (user && user.role === Role.SUPER_ADMIN) {
+            console.error(
+              `User with this ${email} is super admin. Skipping sending verification email.`,
+            );
+            return;
+          }
+
+          // const isFirstSuperAdmin = (await prisma.admin.count()) === 1;
+
+          if (
+            (user && !user.emailVerified) ||
+            //|| !isFirstSuperAdmin
+            user?.role !== Role.SUPER_ADMIN
+          ) {
+            sendEmail({
+              to: email,
+              subject: "Verify your email",
+              templateName: "otp",
+              templateData: {
+                name: user.name,
+                otp,
+              },
+            });
+          }
         } else if (type === "forget-password") {
           const user = await prisma.user.findUnique({
             where: {
@@ -150,7 +167,7 @@ export const auth = betterAuth({
     },
   },
 
-  redirectURLs : {
-    signIn : `${envVars.BETTER_AUTH_URL}/api/v1/auth/google/success`
-  }
+  redirectURLs: {
+    signIn: `${envVars.BETTER_AUTH_URL}/api/v1/auth/google/success`,
+  },
 });

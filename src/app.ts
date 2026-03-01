@@ -56,7 +56,7 @@ app.use(express.urlencoded({ extended: true }));
 cron.schedule("*/25 * * * *", async () => {
   try {
     console.log("Running cron job to cancel the unpaid appointments.......");
-    // await AppointmentService.cancelUnpaidAppointments();
+    await AppointmentService.cancelUnpaidAppointments();
   } catch (error: any) {
     console.error(
       "Error occured while canceling unpaid appointments :",
