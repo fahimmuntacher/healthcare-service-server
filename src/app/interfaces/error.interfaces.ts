@@ -3,10 +3,11 @@ export interface TErrorSources {
   message: string;
 }
 
-export interface TErrorRes {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  stack?: string;
-  errorSource: TErrorSources[];
+export interface TErrorResponse {
+    statusCode?: number;
+    success: boolean;
+    message: string;
+    errorSources: TErrorSources[];
+    stack?: string;
+    error?: unknown;
 }
